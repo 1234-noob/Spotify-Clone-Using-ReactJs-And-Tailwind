@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { assets } from "../assets/assets";
 import { PlayerContext } from "../context/PlayerContext";
+import { CiVolumeMute } from "react-icons/ci";
 
 const Player = () => {
   const {
@@ -14,7 +15,15 @@ const Player = () => {
     previous,
     next,
     seekSong,
+    onMute,
+    mute,
+    seekVolume,
+    seekVolumeBg,
+    seekVolumeHandle,
   } = useContext(PlayerContext);
+
+  console.log("Volume bg", seekVolumeBg);
+  console.log("Volume", seekVolume);
 
   return (
     <div className="h-[10%] black flex justify-between items-center text-white px-5">
@@ -81,14 +90,39 @@ const Player = () => {
         </div>
       </div>
       <div className="hidden lg:flex items-center gap-2 opacity-75">
-        <img src={assets.plays_icon} alt="" className="w-4" />
-        <img src={assets.mic_icon} alt="" className="w-4" />
-        <img src={assets.queue_icon} alt="" className="w-4" />
-        <img src={assets.speaker_icon} alt="" className="w-4" />
-        <img src={assets.volume_icon} alt="" className="w-4" />
-        <div className="w-20 bg-slate-50 h-1 rounded"></div>
-        <img src={assets.mini_player_icon} alt="" className="w-4" />
-        <img src={assets.zoom_icon} alt="" className="w-4" />
+        <img src={assets.plays_icon} alt="" className="w-4 cursor-pointer" />
+        <img src={assets.mic_icon} alt="" className="w-4 cursor-pointer" />
+        <img src={assets.queue_icon} alt="" className="w-4 cursor-pointer" />
+        <img src={assets.speaker_icon} alt="" className="w-4 cursor-pointer" />
+
+        {mute && (
+          <CiVolumeMute className="text-xl cursor-pointer" onClick={onMute} />
+        )}
+        {!mute && (
+          <img
+            src={assets.volume_icon}
+            alt=""
+            className="w-4 cursor-pointer"
+            onClick={onMute}
+          />
+        )}
+
+        <div
+          className="w-20 bg-slate-50 rounded-full cursor-pointer"
+          ref={seekVolumeBg}
+          onClick={seekVolumeHandle}
+        >
+          <hr
+            ref={seekVolume}
+            className="w-[50%] bg-green-800 h-1 rounded-full border-none"
+          />
+        </div>
+        <img
+          src={assets.mini_player_icon}
+          alt=""
+          className="w-4 cursor-pointer"
+        />
+        <img src={assets.zoom_icon} alt="" className="w-4 cursor-pointer" />
       </div>
     </div>
   );

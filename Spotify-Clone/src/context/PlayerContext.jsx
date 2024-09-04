@@ -5,8 +5,13 @@ export const PlayerContext = createContext();
 
 const PlayerContextProvider = ({ children }) => {
   const audioRef = useRef();
+
   const seekBg = useRef();
   const seekBar = useRef();
+  const seekVolume = useRef();
+  const seekVolumeBg = useRef();
+
+  const [mute, setMute] = useState(false);
 
   const [track, setTrack] = useState(songsData[1]);
   const [playerStatus, setPlayerStatus] = useState(false);
@@ -74,24 +79,27 @@ const PlayerContextProvider = ({ children }) => {
   };
 
   const seekSong = async (e) => {
-    const audio = audioRef.current;
-    const seekBar = seekBg.current;
+    audioRef.current.currentTime =
+      (e.nativeEvent.offsetX / seekBg.current.offsetWidth) *
+      audioRef.current.duration;
+  };
 
-    if (audio && seekBar) {
-      const { duration } = audio;
-      const offsetX = e.nativeEvent.offsetX;
-      const barWidth = seekBar.offsetWidth; //
-
-      const newTime = (offsetX / barWidth) * duration;
-
-      if (Number.isFinite(newTime) && newTime >= 0 && newTime <= duration) {
-        audio.currentTime = newTime;
-      } else {
-        console.error("Invalid currentTime value:", newTime);
-      }
-    } else {
-      console.error("Audio or SeekBar references are not defined properly");
+  const onMute = () => {
+    if (mute) {
+      audioRef.current.volume = 1;
+      seekVolume.current.style.width = 100 + "%";
+      setMute(false);
+    } else if (!mute) {
+      audioRef.current.volume = 0;
+      seekVolume.current.style.width = 0 + "%";
+      setMute(true);
     }
+  };
+  const seekVolumeHandle = (e) => {
+    seekVolume.current.style.width =
+      (e.nativeEvent.offsetX / seekVolumeBg.current.offsetWidth) * 100 + "%";
+    const newVolume = e.nativeEvent.offsetX / seekVolumeBg.current.offsetWidth;
+    audioRef.current.volume = newVolume;
   };
   const contextValue = {
     audioRef,
@@ -109,6 +117,11 @@ const PlayerContextProvider = ({ children }) => {
     next,
     previous,
     seekSong,
+    onMute,
+    mute,
+    seekVolume,
+    seekVolumeBg,
+    seekVolumeHandle,
   };
 
   return (
